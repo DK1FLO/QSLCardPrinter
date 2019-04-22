@@ -1,10 +1,13 @@
-﻿using System;
+﻿using QSLCardPrinter.DataClasses;
+using QSLCardPrinter.Helper;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -32,8 +35,6 @@ namespace QSLCardPrinter
 
                 var x = (Match)match;
                 adifItems.Add(new AdifItem(x.Groups["name"].Value.ToUpper(), x.Groups["value"].Value.TrimEnd()));
-                Debug.WriteLine(x.Value);
-
             }
 
             return adifItems;
@@ -86,14 +87,37 @@ namespace QSLCardPrinter
 
         private List<Label> labelList = new List<Label>();
 
-        /// <summary>
-        /// Save the template to a XML-File
+              /// <summary>
+        /// Click on the exit menu button
         /// </summary>
         /// <param name="sender">sender object</param>
-        /// <param name="e">event args</param>
-        private void ButtonSaveTemplate_Click(object sender, EventArgs e)
+        /// <param name="e"></param>
+        private void ExitToolStripMenuItemClick(object sender, EventArgs e)
         {
-            XmlHandler.WriteToXmlFile("LabelList.xml", this.labelList);
+            this.Close();
+        }
+
+        /// <summary>
+        /// Saves the current configuration (= position of labels) to XML
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SaveTemplateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // ToDo: Rework to SaveFileDialog
+            XmlHandler.WriteToXmlFile(this.labelList, "LabelList.xml");
+        }
+
+        /// <summary>
+        /// Read a configuration (= position of labels) to the labelList
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OpenTemplateToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // ToDo: Rework to OpenFileDialog
+            this.labelList.Clear();
+            this.labelList = XmlHandler.ReadFromXmlFile<List<Label>>("LabelList.xml");
         }
     }
 }

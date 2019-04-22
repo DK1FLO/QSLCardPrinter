@@ -38,13 +38,13 @@
             this.backgroundToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadBackgroundImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearBackgroundImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.aboutQSLCardPrinterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configureShortcutsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutQSLCardPrinterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBoxAdifConversion = new System.Windows.Forms.GroupBox();
-            this.buttonReadClipboard = new System.Windows.Forms.Button();
             this.buttonReadFromFile = new System.Windows.Forms.Button();
+            this.buttonReadClipboard = new System.Windows.Forms.Button();
             this.panelDesigner = new System.Windows.Forms.Panel();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewAdifItems)).BeginInit();
             this.menuStrip1.SuspendLayout();
@@ -89,12 +89,14 @@
             this.openTemplateToolStripMenuItem.Name = "openTemplateToolStripMenuItem";
             this.openTemplateToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openTemplateToolStripMenuItem.Text = "Open Template";
+            this.openTemplateToolStripMenuItem.Click += new System.EventHandler(this.OpenTemplateToolStripMenuItem_Click);
             // 
             // saveTemplateToolStripMenuItem
             // 
             this.saveTemplateToolStripMenuItem.Name = "saveTemplateToolStripMenuItem";
             this.saveTemplateToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveTemplateToolStripMenuItem.Text = "Save Template";
+            this.saveTemplateToolStripMenuItem.Click += new System.EventHandler(this.SaveTemplateToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -106,6 +108,7 @@
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolStripMenuItemClick);
             // 
             // backgroundToolStripMenuItem
             // 
@@ -128,6 +131,20 @@
             this.clearBackgroundImageToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
             this.clearBackgroundImageToolStripMenuItem.Text = "Clear background image";
             // 
+            // configureToolStripMenuItem
+            // 
+            this.configureToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.configureShortcutsToolStripMenuItem});
+            this.configureToolStripMenuItem.Name = "configureToolStripMenuItem";
+            this.configureToolStripMenuItem.Size = new System.Drawing.Size(72, 20);
+            this.configureToolStripMenuItem.Text = "Configure";
+            // 
+            // configureShortcutsToolStripMenuItem
+            // 
+            this.configureShortcutsToolStripMenuItem.Name = "configureShortcutsToolStripMenuItem";
+            this.configureShortcutsToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.configureShortcutsToolStripMenuItem.Text = "Configure shortcuts";
+            // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -142,20 +159,6 @@
             this.aboutQSLCardPrinterToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
             this.aboutQSLCardPrinterToolStripMenuItem.Text = "About QSL Card Printer";
             // 
-            // configureToolStripMenuItem
-            // 
-            this.configureToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.configureShortcutsToolStripMenuItem});
-            this.configureToolStripMenuItem.Name = "configureToolStripMenuItem";
-            this.configureToolStripMenuItem.Size = new System.Drawing.Size(72, 20);
-            this.configureToolStripMenuItem.Text = "Configure";
-            // 
-            // configureShortcutsToolStripMenuItem
-            // 
-            this.configureShortcutsToolStripMenuItem.Name = "configureShortcutsToolStripMenuItem";
-            this.configureShortcutsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.configureShortcutsToolStripMenuItem.Text = "Configure shortcuts";
-            // 
             // groupBoxAdifConversion
             // 
             this.groupBoxAdifConversion.Controls.Add(this.buttonReadFromFile);
@@ -168,15 +171,6 @@
             this.groupBoxAdifConversion.TabStop = false;
             this.groupBoxAdifConversion.Text = "Info of ADIF";
             // 
-            // buttonReadClipboard
-            // 
-            this.buttonReadClipboard.Location = new System.Drawing.Point(127, 19);
-            this.buttonReadClipboard.Name = "buttonReadClipboard";
-            this.buttonReadClipboard.Size = new System.Drawing.Size(115, 23);
-            this.buttonReadClipboard.TabIndex = 1;
-            this.buttonReadClipboard.Text = "Read from clipboard";
-            this.buttonReadClipboard.UseVisualStyleBackColor = true;
-            // 
             // buttonReadFromFile
             // 
             this.buttonReadFromFile.Location = new System.Drawing.Point(6, 19);
@@ -185,6 +179,15 @@
             this.buttonReadFromFile.TabIndex = 1;
             this.buttonReadFromFile.Text = "Read from file";
             this.buttonReadFromFile.UseVisualStyleBackColor = true;
+            // 
+            // buttonReadClipboard
+            // 
+            this.buttonReadClipboard.Location = new System.Drawing.Point(127, 19);
+            this.buttonReadClipboard.Name = "buttonReadClipboard";
+            this.buttonReadClipboard.Size = new System.Drawing.Size(115, 23);
+            this.buttonReadClipboard.TabIndex = 1;
+            this.buttonReadClipboard.Text = "Read from clipboard";
+            this.buttonReadClipboard.UseVisualStyleBackColor = true;
             // 
             // panelDesigner
             // 
