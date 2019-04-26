@@ -47,6 +47,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataClasses\AdifItem.cs" />
+    <Compile Include="DataClasses\LabelItem.cs" />
+    <Compile Include="DataClasses\SerializableFont.cs" />
     <Compile Include="FormConfigLabel.cs">
       <SubType>Form</SubType>
     </Compile>
