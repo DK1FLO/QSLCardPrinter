@@ -1,24 +1,104 @@
-﻿using QSLCardPrinter.DataClasses;
-using QSLCardPrinter.Helper;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿// ----------------------------------------------------------------------
+// <copyright>
+// file = "FormMain.cs"
+// project = QSLCardPrinter, QSLCardPrinter
+// last edit 26.04.2019 by Florian Platz (DO1FPI), DO1FPI@darc.de
+// // </copyright>
+// ----------------------------------------------------------------------
 
 namespace QSLCardPrinter
 {
+    #region using directives
+
+    using System;
+    using System.Collections.Generic;
+    using System.Drawing;
+    using System.IO;
+    using System.Reflection;
+    using System.Text.RegularExpressions;
+    using System.Windows.Forms;
+
+    using QSLCardPrinter.DataClasses;
+    using QSLCardPrinter.Helper;
+
+    #endregion
+
     public partial class FormMain : Form
     {
+        /// <summary>
+        /// List of labels that are displayed or printed
+        /// </summary>
+        private readonly List<Label> labelList = new List<Label>();
+
         public FormMain()
         {
-            InitializeComponent();
+            this.InitializeComponent();
+        }
+
+        /// <summary>
+        /// Add a labelItem to the label list (also to the panel)
+        /// </summary>
+        /// <param name="labelItem">label item which should be added</param>
+        private void AddLabel(LabelItem labelItem)
+        {
+            Label label;
+
+            // Check if font is not null, then add
+            label = new Label
+                        {
+                            Name = labelItem.AdifKey,
+                            Text =
+                                string.IsNullOrEmpty(labelItem.CustomString)
+                                    ? labelItem.AdifKey
+                                    : labelItem.CustomString,
+                            AutoSize = true,
+                            BackColor = Color.Transparent,
+                            Top = labelItem.PositionTop,
+                            Left = labelItem.PositionLeft,
+                            Font = labelItem.SelectedFont.ToFont(),
+                            TextAlign = ContentAlignment.MiddleCenter
+                        };
+
+            label.DoubleClick += this.LabelOnDoubleClick;
+
+            this.labelList.Add(label);
+            this.panelDesigner.Controls.Add(label);
+        }
+
+        /// <summary>
+        /// Read ADIF from Clipboard
+        /// </summary>
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event args</param>
+        private void ButtonReadClipboardClick(object sender, EventArgs e)
+        {
+            var listOfAdifs = this.EvaluateStringAdif(Clipboard.GetText());
+
+            this.dataGridViewAdifItems.Rows.Clear();
+            foreach (var adifItem in listOfAdifs)
+                this.dataGridViewAdifItems.Rows.Add(adifItem.AdifName, adifItem.AdifValue);
+        }
+
+        /// <summary>
+        /// Double click on the ADIF data grid view
+        /// </summary>
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event args</param>
+        private void DataGridViewAdifItems_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            // Create a new Label on the panel
+            var label = new Label
+                            {
+                                Name = "label" + this.dataGridViewAdifItems.Rows[e.RowIndex].Cells[0].Value,
+                                Text = this.dataGridViewAdifItems.Rows[e.RowIndex].Cells[1].Value.ToString(),
+                                AutoSize = true
+                            };
+
+            // Add event to the label in order to config the label
+            label.DoubleClick += this.LabelOnDoubleClick;
+
+            this.labelList.Add(label);
+            this.panelDesigner.Controls.Add(label);
         }
 
         /// <summary>
@@ -33,7 +113,6 @@ namespace QSLCardPrinter
             var adifItems = new List<AdifItem>();
             foreach (var match in matches)
             {
-
                 var x = (Match)match;
                 adifItems.Add(new AdifItem(x.Groups["name"].Value.ToUpper(), x.Groups["value"].Value.TrimEnd()));
             }
@@ -42,86 +121,18 @@ namespace QSLCardPrinter
         }
 
         /// <summary>
-        /// Read ADIF from Clipboard
-        /// </summary>
-        /// <param name="sender">sender object</param>
-        /// <param name="e">event args</param>
-        private void ButtonReadClipboardClick(object sender, EventArgs e)
-        {
-
-            var listOfAdifs = this.EvaluateStringAdif(Clipboard.GetText());
-
-            this.dataGridViewAdifItems.Rows.Clear();
-            foreach (var adifItem in listOfAdifs)
-            {
-                this.dataGridViewAdifItems.Rows.Add(new Object[] { adifItem.AdifName, adifItem.AdifValue });
-            }
-
-        }
-
-        /// <summary>
-        /// Double click on the ADIF data grid view
-        /// </summary>
-        /// <param name="sender">sender object</param>
-        /// <param name="e">event args</param>
-        private void DataGridViewAdifItems_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            // Create a new Label on the panel
-            var label = new Label()
-            {
-                Name = "label" + this.dataGridViewAdifItems.Rows[e.RowIndex].Cells[0].Value,
-                Text = this.dataGridViewAdifItems.Rows[e.RowIndex].Cells[1].Value.ToString(),
-                AutoSize = true
-            };
-
-            // Add event to the label in order to config the label
-            label.DoubleClick += this.LabelOnDoubleClick;
-
-            this.labelList.Add(label);
-            this.panelDesigner.Controls.Add(label);
-        }
-
-        private void LabelOnDoubleClick(object sender, EventArgs e)
-        {
-            new FormConfigLabel((Label)sender).ShowDialog();
-        }
-
-        private List<Label> labelList = new List<Label>();
-
-              /// <summary>
         /// Click on the exit menu button
         /// </summary>
         /// <param name="sender">sender object</param>
-        /// <param name="e"></param>
+        /// <param name="e">event args</param>
         private void ExitToolStripMenuItemClick(object sender, EventArgs e)
         {
             this.Close();
         }
 
-        /// <summary>
-        /// Saves the current configuration (= position of labels) to XML
-        /// </summary>
-        /// <param name="sender">sender object</param>
-        /// <param name="e">event args</param>
-        private void SaveTemplateToolStripMenuItem_Click(object sender, EventArgs e)
+        private void LabelOnDoubleClick(object sender, EventArgs e)
         {
-            // Create a save file dialog
-            var sfd = new SaveFileDialog()
-            {
-                Filter = "XML File | *.xml",
-                Title = "Save QSL Card Printer template file"                    
-            };
-
-            // Show dialog and check if it was successful
-            if(sfd.ShowDialog() == DialogResult.OK)
-            {
-                // Write to XML at specified path
-                XmlHandler.WriteToXmlFile(this.labelList, sfd.FileName);
-            }
-
-
-        
-
+            new FormConfigLabel((Label)sender).ShowDialog();
         }
 
         /// <summary>
@@ -135,18 +146,15 @@ namespace QSLCardPrinter
             using (var ofd = new OpenFileDialog())
             {
                 ofd.Filter = @"XML files|*.xml";
-                ofd.InitialDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                ofd.Title = @"Read QSLCardPrinter template file";
+                ofd.InitialDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 ofd.RestoreDirectory = true;
 
                 // Show Dialog, only if successful continue loading
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-
                     // Dispose all old labels
-                    foreach (var label in this.labelList)
-                    {
-                        label.Dispose();
-                    }
+                    foreach (var label in this.labelList) label.Dispose();
 
                     // Clear the list to be clean for items out of XML file
                     this.labelList.Clear();
@@ -155,41 +163,52 @@ namespace QSLCardPrinter
                     var labelItemList = XmlHandler.ReadFromXmlFile<List<LabelItem>>(ofd.FileName);
 
                     // Add all labels from temporary label list to global list which is currently active
-                    foreach (var labelItem in labelItemList)
-                    {
-                        this.AddLabel(labelItem);
-                    }
+                    foreach (var labelItem in labelItemList) this.AddLabel(labelItem);
                 }
             }
         }
 
         /// <summary>
-        /// Add a labelItem to the label list (also to the panel)
+        /// Saves the current configuration (= position of labels) to XML
         /// </summary>
-        /// <param name="labelItem">label item which should be added</param>
-        private void AddLabel(LabelItem labelItem)
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event args</param>
+        private void SaveTemplateToolStripMenuItemClick(object sender, EventArgs e)
         {
-
-            Label label;
-            // Check if font is not null, then add
-            label = new Label
+            // use save file dialog
+            using (var sfd = new SaveFileDialog())
             {
-                Name = labelItem.AdifKey,
-                Text = string.IsNullOrEmpty(labelItem.CustomString) ? labelItem.AdifKey : labelItem.CustomString,
-                AutoSize = true,
-                BackColor = Color.Transparent,
-                Top = labelItem.PositionTop,
-                Left = labelItem.PositionLeft,
-                Font = labelItem.SelectedFont.ToFont(),
-                TextAlign = ContentAlignment.MiddleCenter
-            };
+                sfd.Filter = @"XML files|*.xml";
+                sfd.Title = @"Save QSLCardPrinter template file";
+                sfd.InitialDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                sfd.RestoreDirectory = true;
 
-            label.DoubleClick += LabelOnDoubleClick;
+                // Show dialog - check if the file name is not an empty string, then serialize list for saving.  
+                if (sfd.ShowDialog() == DialogResult.OK && !string.IsNullOrEmpty(sfd.FileName))
+                {
+                    var labelItemList = new List<LabelItem>();
+                    foreach (var label in this.labelList)
+                        labelItemList.Add(
+                            new LabelItem(
+                                label.Name,
+                                label.Top,
+                                label.Left,
+                                new SerializableFont(label.Font),
+                                label.Name.StartsWith("custom") ? label.Text : null));
 
-            this.labelList.Add(label);
-            this.panelDesigner.Controls.Add(label);
+                    XmlHandler.WriteToXmlFile(labelItemList, sfd.FileName);
+                }
+            }
         }
 
+        /// <summary>
+        /// Start the label wizard so the user can add new items of a loaded adif file
+        /// </summary>
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event args</param>
+        private void StartLabelWizardToolStripMenuItemClick(object sender, EventArgs e)
+        {
 
+        }
     }
 }

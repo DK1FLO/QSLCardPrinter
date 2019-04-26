@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.dataGridViewAdifItems = new System.Windows.Forms.DataGridView();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openTemplateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -42,23 +41,11 @@
             this.configureShortcutsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutQSLCardPrinterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.groupBoxAdifConversion = new System.Windows.Forms.GroupBox();
-            this.buttonReadFromFile = new System.Windows.Forms.Button();
-            this.buttonReadClipboard = new System.Windows.Forms.Button();
             this.panelDesigner = new System.Windows.Forms.Panel();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewAdifItems)).BeginInit();
+            this.startLabelWizardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip1.SuspendLayout();
-            this.groupBoxAdifConversion.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // dataGridViewAdifItems
-            // 
-            this.dataGridViewAdifItems.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewAdifItems.Location = new System.Drawing.Point(6, 48);
-            this.dataGridViewAdifItems.Name = "dataGridViewAdifItems";
-            this.dataGridViewAdifItems.Size = new System.Drawing.Size(280, 357);
-            this.dataGridViewAdifItems.TabIndex = 0;
-            this.dataGridViewAdifItems.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.DataGridViewAdifItems_CellDoubleClick);
             // 
             // menuStrip1
             // 
@@ -69,7 +56,7 @@
             this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1056, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(725, 24);
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -79,6 +66,8 @@
             this.openTemplateToolStripMenuItem,
             this.saveTemplateToolStripMenuItem,
             this.toolStripSeparator1,
+            this.startLabelWizardToolStripMenuItem,
+            this.toolStripSeparator2,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -89,14 +78,14 @@
             this.openTemplateToolStripMenuItem.Name = "openTemplateToolStripMenuItem";
             this.openTemplateToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openTemplateToolStripMenuItem.Text = "Open Template";
-            this.openTemplateToolStripMenuItem.Click += new System.EventHandler(this.OpenTemplateToolStripMenuItem_Click);
+            this.openTemplateToolStripMenuItem.Click += new System.EventHandler(this.OpenTemplateToolStripMenuItemClick);
             // 
             // saveTemplateToolStripMenuItem
             // 
             this.saveTemplateToolStripMenuItem.Name = "saveTemplateToolStripMenuItem";
             this.saveTemplateToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveTemplateToolStripMenuItem.Text = "Save Template";
-            this.saveTemplateToolStripMenuItem.Click += new System.EventHandler(this.SaveTemplateToolStripMenuItem_Click);
+            this.saveTemplateToolStripMenuItem.Click += new System.EventHandler(this.SaveTemplateToolStripMenuItemClick);
             // 
             // toolStripSeparator1
             // 
@@ -159,36 +148,6 @@
             this.aboutQSLCardPrinterToolStripMenuItem.Size = new System.Drawing.Size(197, 22);
             this.aboutQSLCardPrinterToolStripMenuItem.Text = "About QSL Card Printer";
             // 
-            // groupBoxAdifConversion
-            // 
-            this.groupBoxAdifConversion.Controls.Add(this.buttonReadFromFile);
-            this.groupBoxAdifConversion.Controls.Add(this.buttonReadClipboard);
-            this.groupBoxAdifConversion.Controls.Add(this.dataGridViewAdifItems);
-            this.groupBoxAdifConversion.Location = new System.Drawing.Point(718, 27);
-            this.groupBoxAdifConversion.Name = "groupBoxAdifConversion";
-            this.groupBoxAdifConversion.Size = new System.Drawing.Size(292, 411);
-            this.groupBoxAdifConversion.TabIndex = 3;
-            this.groupBoxAdifConversion.TabStop = false;
-            this.groupBoxAdifConversion.Text = "Info of ADIF";
-            // 
-            // buttonReadFromFile
-            // 
-            this.buttonReadFromFile.Location = new System.Drawing.Point(6, 19);
-            this.buttonReadFromFile.Name = "buttonReadFromFile";
-            this.buttonReadFromFile.Size = new System.Drawing.Size(115, 23);
-            this.buttonReadFromFile.TabIndex = 1;
-            this.buttonReadFromFile.Text = "Read from file";
-            this.buttonReadFromFile.UseVisualStyleBackColor = true;
-            // 
-            // buttonReadClipboard
-            // 
-            this.buttonReadClipboard.Location = new System.Drawing.Point(127, 19);
-            this.buttonReadClipboard.Name = "buttonReadClipboard";
-            this.buttonReadClipboard.Size = new System.Drawing.Size(115, 23);
-            this.buttonReadClipboard.TabIndex = 1;
-            this.buttonReadClipboard.Text = "Read from clipboard";
-            this.buttonReadClipboard.UseVisualStyleBackColor = true;
-            // 
             // panelDesigner
             // 
             this.panelDesigner.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -197,29 +156,36 @@
             this.panelDesigner.Size = new System.Drawing.Size(700, 450);
             this.panelDesigner.TabIndex = 4;
             // 
+            // startLabelWizardToolStripMenuItem
+            // 
+            this.startLabelWizardToolStripMenuItem.Name = "startLabelWizardToolStripMenuItem";
+            this.startLabelWizardToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.startLabelWizardToolStripMenuItem.Text = "Start label wizard";
+            this.startLabelWizardToolStripMenuItem.Click += new System.EventHandler(this.StartLabelWizardToolStripMenuItemClick);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1056, 486);
+            this.ClientSize = new System.Drawing.Size(725, 486);
             this.Controls.Add(this.panelDesigner);
-            this.Controls.Add(this.groupBoxAdifConversion);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "FormMain";
             this.Text = "QSLCardPrinter";
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewAdifItems)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            this.groupBoxAdifConversion.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.DataGridView dataGridViewAdifItems;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openTemplateToolStripMenuItem;
@@ -233,10 +199,9 @@
         private System.Windows.Forms.ToolStripMenuItem configureShortcutsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutQSLCardPrinterToolStripMenuItem;
-        private System.Windows.Forms.GroupBox groupBoxAdifConversion;
-        private System.Windows.Forms.Button buttonReadFromFile;
-        private System.Windows.Forms.Button buttonReadClipboard;
         private System.Windows.Forms.Panel panelDesigner;
+        private System.Windows.Forms.ToolStripMenuItem startLabelWizardToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
     }
 }
 
