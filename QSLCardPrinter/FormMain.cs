@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -117,19 +118,78 @@ namespace QSLCardPrinter
                 // Write to XML at specified path
                 XmlHandler.WriteToXmlFile(this.labelList, sfd.FileName);
             }
-            
+
+
+        
+
         }
 
         /// <summary>
         /// Read a configuration (= position of labels) to the labelList
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OpenTemplateToolStripMenuItem_Click(object sender, EventArgs e)
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event args</param>
+        private void OpenTemplateToolStripMenuItemClick(object sender, EventArgs e)
         {
-            // ToDo: Rework to OpenFileDialog
-            this.labelList.Clear();
-            this.labelList = XmlHandler.ReadFromXmlFile<List<Label>>("LabelList.xml");
+            // Use open file dialog 
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.Filter = @"XML files|*.xml";
+                ofd.InitialDirectory = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                ofd.RestoreDirectory = true;
+
+                // Show Dialog, only if successful continue loading
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+
+                    // Dispose all old labels
+                    foreach (var label in this.labelList)
+                    {
+                        label.Dispose();
+                    }
+
+                    // Clear the list to be clean for items out of XML file
+                    this.labelList.Clear();
+
+                    // De-serialize items of once saved xml list to temporary label list
+                    var labelItemList = XmlHandler.ReadFromXmlFile<List<LabelItem>>(ofd.FileName);
+
+                    // Add all labels from temporary label list to global list which is currently active
+                    foreach (var labelItem in labelItemList)
+                    {
+                        this.AddLabel(labelItem);
+                    }
+                }
+            }
         }
+
+        /// <summary>
+        /// Add a labelItem to the label list (also to the panel)
+        /// </summary>
+        /// <param name="labelItem">label item which should be added</param>
+        private void AddLabel(LabelItem labelItem)
+        {
+
+            Label label;
+            // Check if font is not null, then add
+            label = new Label
+            {
+                Name = labelItem.AdifKey,
+                Text = string.IsNullOrEmpty(labelItem.CustomString) ? labelItem.AdifKey : labelItem.CustomString,
+                AutoSize = true,
+                BackColor = Color.Transparent,
+                Top = labelItem.PositionTop,
+                Left = labelItem.PositionLeft,
+                Font = labelItem.SelectedFont.ToFont(),
+                TextAlign = ContentAlignment.MiddleCenter
+            };
+
+            label.DoubleClick += LabelOnDoubleClick;
+
+            this.labelList.Add(label);
+            this.panelDesigner.Controls.Add(label);
+        }
+
+
     }
 }
