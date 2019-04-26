@@ -11,7 +11,7 @@ namespace QSLCardPrinter.DataClasses
     /// <summary>
     /// Class which holds information belonging to one ADIF item
     /// </summary>
-    internal class LabelItem
+    public class LabelItem
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LabelItem"/> class.
