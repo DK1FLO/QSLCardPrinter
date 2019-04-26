@@ -1,7 +1,7 @@
 ﻿// ----------------------------------------------------------------------
 // <copyright>
 // file = "LabelItem.cs"
-// project = QSLCardPrinter , QSLCardPrinter
+// project = QSLCardPrinter, QSLCardPrinter
 // last edit 26.04.2019 by Florian Platz (DO1FPI), DO1FPI@darc.de
 // // </copyright>
 // ----------------------------------------------------------------------
