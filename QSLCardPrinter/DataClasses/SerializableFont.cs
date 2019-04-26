@@ -1,29 +1,38 @@
-﻿#region using directives
-
-using System.Drawing;
-
-#endregion
+﻿// ----------------------------------------------------------------------
+// <copyright>
+// file = "SerializableFont.cs"
+// project = QSLCardPrinter, QSLCardPrinter
+// last edit 26.04.2019 by Florian Platz (DO1FPI), DO1FPI@darc.de
+// // </copyright>
+// ----------------------------------------------------------------------
 
 namespace QSLCardPrinter.DataClasses
 {
+    #region using directives
+
+    using System.Drawing;
+
+    #endregion
+
     /// <summary>
     /// Font descriptor, that can be xml-serialized
     /// </summary>
     public class SerializableFont
     {
         /// <summary>
-        /// Initialize a new class of SerializableFont with a given System.Drawing.Font
+        /// Initializes a new instance of the <see cref="SerializableFont"/> class. 
         /// </summary>
-        /// <param name="f">Font to be converted to serializable font</param>
-        public SerializableFont(Font f)
+        /// <param name="drawingFont"> Font to be converted to serializable font </param>
+        public SerializableFont(Font drawingFont)
         {
-            FontFamily = f.FontFamily.Name;
-            GraphicsUnit = f.Unit;
-            Size = f.Size;
-            Style = f.Style;
+            this.FontFamily = drawingFont.FontFamily.Name;
+            this.GraphicsUnit = drawingFont.Unit;
+            this.Size = drawingFont.Size;
+            this.Style = drawingFont.Style;
         }
 
         /// <summary>
+        /// Prevents a default instance of the <see cref="SerializableFont"/> class from being created. 
         /// Intended for xml serialization purposes only
         /// </summary>
         private SerializableFont()
@@ -66,8 +75,7 @@ namespace QSLCardPrinter.DataClasses
         /// <returns>A System.Drawing.Font</returns>
         public Font ToFont()
         {
-            return new Font(FontFamily, Size, Style,
-                GraphicsUnit);
+            return new Font(this.FontFamily, this.Size, this.Style, this.GraphicsUnit);
         }
     }
 }
