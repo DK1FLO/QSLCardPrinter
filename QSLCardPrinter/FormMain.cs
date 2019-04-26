@@ -100,12 +100,24 @@ namespace QSLCardPrinter
         /// <summary>
         /// Saves the current configuration (= position of labels) to XML
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event args</param>
         private void SaveTemplateToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // ToDo: Rework to SaveFileDialog
-            XmlHandler.WriteToXmlFile(this.labelList, "LabelList.xml");
+            // Create a save file dialog
+            var sfd = new SaveFileDialog()
+            {
+                Filter = "XML File | *.xml",
+                Title = "Save QSL Card Printer template file"                    
+            };
+
+            // Show dialog and check if it was successful
+            if(sfd.ShowDialog() == DialogResult.OK)
+            {
+                // Write to XML at specified path
+                XmlHandler.WriteToXmlFile(this.labelList, sfd.FileName);
+            }
+            
         }
 
         /// <summary>
