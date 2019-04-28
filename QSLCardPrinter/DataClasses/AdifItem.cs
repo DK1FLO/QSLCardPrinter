@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 namespace QSLCardPrinter.DataClasses
 {
+    using System.Text.RegularExpressions;
+
     /// <summary>
     /// Class which holds information belonging to one ADIF item
     /// </summary>
@@ -41,5 +43,26 @@ namespace QSLCardPrinter.DataClasses
         public string AdifValue { get; set; }
 
         #endregion
+
+        /// <summary>
+        /// Evaluates the ADIF string 
+        /// </summary>
+        /// <param name="adifString"> Adif string that should be evaluated </param>
+        /// <returns>List of ADIF items</returns>
+        public static List<AdifItem> EvaluateString(string adifString)
+        {
+            var regex = new Regex(@"<(?'name'\w+):(?'length'\d+)>(?'value'[^<]*)");
+            var matches = regex.Matches(adifString);
+
+            // Add all found matches to list
+            var adifItems = new List<AdifItem>();
+            foreach (var match in matches)
+            {
+                var x = (Match)match;
+                adifItems.Add(new AdifItem(x.Groups["name"].Value.ToUpper(), x.Groups["value"].Value.TrimEnd()));
+            }
+
+            return adifItems;
+        }
     }
 }
