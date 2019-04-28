@@ -28,6 +28,9 @@ namespace QSLCardPrinter
         public ConfigurationDialog()
         {
             this.InitializeComponent();
+
+            // Load settings from settings
+            this.LoadSettings();
         }
 
         /// <summary>
