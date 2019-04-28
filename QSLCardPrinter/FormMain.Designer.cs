@@ -33,17 +33,16 @@
             this.openTemplateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveTemplateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.startLabelWizardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.backgroundToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadBackgroundImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearBackgroundImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.configureToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.configureShortcutsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutQSLCardPrinterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panelDesigner = new System.Windows.Forms.Panel();
-            this.startLabelWizardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -76,26 +75,38 @@
             // openTemplateToolStripMenuItem
             // 
             this.openTemplateToolStripMenuItem.Name = "openTemplateToolStripMenuItem";
-            this.openTemplateToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openTemplateToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.openTemplateToolStripMenuItem.Text = "Open Template";
             this.openTemplateToolStripMenuItem.Click += new System.EventHandler(this.OpenTemplateToolStripMenuItemClick);
             // 
             // saveTemplateToolStripMenuItem
             // 
             this.saveTemplateToolStripMenuItem.Name = "saveTemplateToolStripMenuItem";
-            this.saveTemplateToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveTemplateToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.saveTemplateToolStripMenuItem.Text = "Save Template";
             this.saveTemplateToolStripMenuItem.Click += new System.EventHandler(this.SaveTemplateToolStripMenuItemClick);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(160, 6);
+            // 
+            // startLabelWizardToolStripMenuItem
+            // 
+            this.startLabelWizardToolStripMenuItem.Name = "startLabelWizardToolStripMenuItem";
+            this.startLabelWizardToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
+            this.startLabelWizardToolStripMenuItem.Text = "Start label wizard";
+            this.startLabelWizardToolStripMenuItem.Click += new System.EventHandler(this.StartLabelWizardToolStripMenuItemClick);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(160, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.ExitToolStripMenuItemClick);
             // 
@@ -113,26 +124,21 @@
             this.loadBackgroundImageToolStripMenuItem.Name = "loadBackgroundImageToolStripMenuItem";
             this.loadBackgroundImageToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
             this.loadBackgroundImageToolStripMenuItem.Text = "Load background image";
+            this.loadBackgroundImageToolStripMenuItem.Click += new System.EventHandler(this.LoadBackgroundImageToolStripMenuItemClick);
             // 
             // clearBackgroundImageToolStripMenuItem
             // 
             this.clearBackgroundImageToolStripMenuItem.Name = "clearBackgroundImageToolStripMenuItem";
             this.clearBackgroundImageToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
             this.clearBackgroundImageToolStripMenuItem.Text = "Clear background image";
+            this.clearBackgroundImageToolStripMenuItem.Click += new System.EventHandler(this.ClearBackgroundImageToolStripMenuItemClick);
             // 
             // configureToolStripMenuItem
             // 
-            this.configureToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.configureShortcutsToolStripMenuItem});
             this.configureToolStripMenuItem.Name = "configureToolStripMenuItem";
             this.configureToolStripMenuItem.Size = new System.Drawing.Size(72, 20);
             this.configureToolStripMenuItem.Text = "Configure";
-            // 
-            // configureShortcutsToolStripMenuItem
-            // 
-            this.configureShortcutsToolStripMenuItem.Name = "configureShortcutsToolStripMenuItem";
-            this.configureShortcutsToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
-            this.configureShortcutsToolStripMenuItem.Text = "Configure shortcuts";
+            this.configureToolStripMenuItem.Click += new System.EventHandler(this.ConfigureToolStripMenuItemClick);
             // 
             // aboutToolStripMenuItem
             // 
@@ -155,18 +161,6 @@
             this.panelDesigner.Name = "panelDesigner";
             this.panelDesigner.Size = new System.Drawing.Size(700, 450);
             this.panelDesigner.TabIndex = 4;
-            // 
-            // startLabelWizardToolStripMenuItem
-            // 
-            this.startLabelWizardToolStripMenuItem.Name = "startLabelWizardToolStripMenuItem";
-            this.startLabelWizardToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.startLabelWizardToolStripMenuItem.Text = "Start label wizard";
-            this.startLabelWizardToolStripMenuItem.Click += new System.EventHandler(this.StartLabelWizardToolStripMenuItemClick);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
             // 
             // FormMain
             // 
@@ -196,7 +190,6 @@
         private System.Windows.Forms.ToolStripMenuItem loadBackgroundImageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem clearBackgroundImageToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem configureToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem configureShortcutsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutQSLCardPrinterToolStripMenuItem;
         private System.Windows.Forms.Panel panelDesigner;

@@ -2,7 +2,7 @@
 // <copyright>
 // file = "FormMain.cs"
 // project = QSLCardPrinter, QSLCardPrinter
-// last edit 26.04.2019 by Florian Platz (DO1FPI), DO1FPI@darc.de
+// last edit 28.04.2019 by Florian Platz (DO1FPI), DO1FPI@darc.de
 // // </copyright>
 // ----------------------------------------------------------------------
 
@@ -15,24 +15,59 @@ namespace QSLCardPrinter
     using System.Drawing;
     using System.IO;
     using System.Reflection;
+    using System.Reflection.Emit;
     using System.Text.RegularExpressions;
     using System.Windows.Forms;
 
     using QSLCardPrinter.DataClasses;
     using QSLCardPrinter.Helper;
+    using QSLCardPrinter.Properties;
+
+    using Label = System.Windows.Forms.Label;
 
     #endregion
 
+    /// <summary>
+    /// Main form of the application
+    /// </summary>
     public partial class FormMain : Form
     {
-        /// <summary>
-        /// List of labels that are displayed or printed
-        /// </summary>
-        private readonly List<Label> labelList = new List<Label>();
+       
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FormMain"/> class. 
+        /// </summary>
         public FormMain()
         {
             this.InitializeComponent();
+
+            // Load last active template, if selected
+            if (Settings.Default.LoadLastActiveTemplate && !string.IsNullOrEmpty(Settings.Default.LastActiveTemplatePath))
+            {
+                try
+                {
+                    this.LoadFromTemplate(Settings.Default.LastActiveTemplatePath);
+                }
+                catch (Exception e)
+                {
+                    ExceptionManager.ShowException(new Exception("Could not load last active template.", e));
+                }
+            }
+
+            // Load last active background image, if selected
+            if (Settings.Default.LastActiveBackgroundImage
+                && !string.IsNullOrEmpty(Settings.Default.LastActiveBackgroundImagePath))
+            {
+                try
+                {
+                    // Load last image to panel
+                    this.panelDesigner.BackgroundImage = Image.FromFile(Settings.Default.LastActiveBackgroundImagePath);
+                }
+                catch (Exception e)
+                {
+                    ExceptionManager.ShowException(new Exception("Could not load last active background image.", e));
+                }
+            }
         }
 
         /// <summary>
@@ -61,64 +96,16 @@ namespace QSLCardPrinter
 
             label.DoubleClick += this.LabelOnDoubleClick;
 
-            this.labelList.Add(label);
+            this.labelList.Add(new LabelItem(label);
+
+            new LabelItem())
             this.panelDesigner.Controls.Add(label);
         }
 
-        /// <summary>
-        /// Read ADIF from Clipboard
-        /// </summary>
-        /// <param name="sender">sender object</param>
-        /// <param name="e">event args</param>
-        private void ButtonReadClipboardClick(object sender, EventArgs e)
-        {
-            var listOfAdifs = this.EvaluateStringAdif(Clipboard.GetText());
+       
 
-            this.dataGridViewAdifItems.Rows.Clear();
-            foreach (var adifItem in listOfAdifs)
-                this.dataGridViewAdifItems.Rows.Add(adifItem.AdifName, adifItem.AdifValue);
-        }
 
-        /// <summary>
-        /// Double click on the ADIF data grid view
-        /// </summary>
-        /// <param name="sender">sender object</param>
-        /// <param name="e">event args</param>
-        private void DataGridViewAdifItems_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
-        {
-            // Create a new Label on the panel
-            var label = new Label
-                            {
-                                Name = "label" + this.dataGridViewAdifItems.Rows[e.RowIndex].Cells[0].Value,
-                                Text = this.dataGridViewAdifItems.Rows[e.RowIndex].Cells[1].Value.ToString(),
-                                AutoSize = true
-                            };
-
-            // Add event to the label in order to config the label
-            label.DoubleClick += this.LabelOnDoubleClick;
-
-            this.labelList.Add(label);
-            this.panelDesigner.Controls.Add(label);
-        }
-
-        /// <summary>
-        /// Evaluates the ADIF string which was posted to clipboard
-        /// </summary>
-        /// <param name="adifString"></param>
-        private List<AdifItem> EvaluateStringAdif(string adifString)
-        {
-            var regex = new Regex(@"<(?'name'\w+):(?'length'\d+)>(?'value'[^<]*)");
-            var matches = regex.Matches(adifString);
-
-            var adifItems = new List<AdifItem>();
-            foreach (var match in matches)
-            {
-                var x = (Match)match;
-                adifItems.Add(new AdifItem(x.Groups["name"].Value.ToUpper(), x.Groups["value"].Value.TrimEnd()));
-            }
-
-            return adifItems;
-        }
+    
 
         /// <summary>
         /// Click on the exit menu button
@@ -130,9 +117,39 @@ namespace QSLCardPrinter
             this.Close();
         }
 
+        /// <summary>
+        /// Event handler for showing Label config form
+        /// </summary>
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event args</param>
         private void LabelOnDoubleClick(object sender, EventArgs e)
         {
             new FormConfigLabel((Label)sender).ShowDialog();
+        }
+
+        /// <summary>
+        /// Load label items from file to labelList
+        /// </summary>
+        /// <param name="fileName">Filename / path that should be loaded</param>
+        private void LoadFromTemplate(string fileName)
+        {
+            // Dispose all old labels
+            foreach (var label in this.labelList)
+            {
+                label.Dispose();
+            }
+
+            // Clear the list to be clean for items out of XML file
+            this.labelList.Clear();
+
+            // De-serialize items of once saved xml list to temporary label list
+            var labelItemList = XmlHandler.ReadFromXmlFile<List<LabelItem>>(fileName);
+
+            // Add all labels from temporary label list to global list which is currently active
+            foreach (var labelItem in labelItemList)
+            {
+                this.AddLabel(labelItem);
+            }
         }
 
         /// <summary>
@@ -153,17 +170,12 @@ namespace QSLCardPrinter
                 // Show Dialog, only if successful continue loading
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    // Dispose all old labels
-                    foreach (var label in this.labelList) label.Dispose();
+                    // Load from template
+                    this.LoadFromTemplate(ofd.FileName);
 
-                    // Clear the list to be clean for items out of XML file
-                    this.labelList.Clear();
-
-                    // De-serialize items of once saved xml list to temporary label list
-                    var labelItemList = XmlHandler.ReadFromXmlFile<List<LabelItem>>(ofd.FileName);
-
-                    // Add all labels from temporary label list to global list which is currently active
-                    foreach (var labelItem in labelItemList) this.AddLabel(labelItem);
+                    // Save in settings as last loaded file
+                    Settings.Default.LastActiveTemplatePath = ofd.FileName;
+                    Settings.Default.Save();
                 }
             }
         }
@@ -188,6 +200,7 @@ namespace QSLCardPrinter
                 {
                     var labelItemList = new List<LabelItem>();
                     foreach (var label in this.labelList)
+                    {
                         labelItemList.Add(
                             new LabelItem(
                                 label.Name,
@@ -195,8 +208,13 @@ namespace QSLCardPrinter
                                 label.Left,
                                 new SerializableFont(label.Font),
                                 label.Name.StartsWith("custom") ? label.Text : null));
+                    }
 
                     XmlHandler.WriteToXmlFile(labelItemList, sfd.FileName);
+
+                    // Save in settings as last active file
+                    Settings.Default.LastActiveTemplatePath = sfd.FileName;
+                    Settings.Default.Save();
                 }
             }
         }
@@ -208,7 +226,52 @@ namespace QSLCardPrinter
         /// <param name="e">event args</param>
         private void StartLabelWizardToolStripMenuItemClick(object sender, EventArgs e)
         {
+            new LabelWizard(this.labelItem).ShowDialog();
+        }
 
+        /// <summary>
+        /// Show configuration dialog
+        /// </summary>
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event args</param>
+        private void ConfigureToolStripMenuItemClick(object sender, EventArgs e)
+        {
+            new ConfigurationDialog().ShowDialog();
+        }
+
+        /// <summary>
+        /// Load background image in panel designed
+        /// </summary>
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event args</param>
+        private void LoadBackgroundImageToolStripMenuItemClick(object sender, EventArgs e)
+        {
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.Filter = @"JPG files (*.jpg)|*.jpg,*jpeg|Portable Network Graphic files (*.png)|*.png";
+                ofd.FilterIndex = 2;
+                ofd.RestoreDirectory = true;
+
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    // Get the path of specified file
+                    this.panelDesigner.BackgroundImage = Image.FromFile(ofd.FileName);
+
+                    // Save image path as last active
+                    Settings.Default.LastActiveBackgroundImagePath = ofd.FileName;
+                    Settings.Default.Save();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Clear the background image
+        /// </summary>
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event args</param>
+        private void ClearBackgroundImageToolStripMenuItemClick(object sender, EventArgs e)
+        {
+            this.panelDesigner.BackgroundImage = null;
         }
     }
 }
