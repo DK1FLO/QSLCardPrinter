@@ -67,7 +67,11 @@ namespace QSLCardPrinter
         {
             // Load last active template + path
             this.checkBoxLoadLastTemplate.Checked = Settings.Default.LoadLastActiveTemplate;
-            this.textBoxLastActiveTemplateFileName.Text = Settings.Default.LastActiveTemplateString;
+            this.textBoxLastActiveTemplateFileName.Text = Settings.Default.LastActiveTemplatePath;
+
+            // Load last active template + path
+            this.checkBoxLoadLastActiveBackgroundImage.Checked = Settings.Default.LastActiveBackgroundImage;
+            this.textBoxLastActiveTemplateFileName.Text = Settings.Default.LastActiveBackgroundImagePath;
         }
 
         /// <summary>
@@ -77,6 +81,12 @@ namespace QSLCardPrinter
         {
             // Load last active template
             Settings.Default.LoadLastActiveTemplate = this.checkBoxLoadLastTemplate.Checked;
+
+            // Background image load by default?
+            Settings.Default.LastActiveBackgroundImage = this.checkBoxLoadLastActiveBackgroundImage.Checked;
+
+            // Save settings
+            Settings.Default.Save();
         }
     }
 }
