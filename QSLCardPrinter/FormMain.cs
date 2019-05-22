@@ -2,7 +2,7 @@
 // <copyright>
 // file = "FormMain.cs"
 // project = QSLCardPrinter, QSLCardPrinter
-// last edit 28.04.2019 by Florian Platz (DO1FPI), DO1FPI@darc.de
+// last edit 21.05.2019 by Florian Platz (DO1FPI), DO1FPI@darc.de
 // // </copyright>
 // ----------------------------------------------------------------------
 
@@ -15,15 +15,11 @@ namespace QSLCardPrinter
     using System.Drawing;
     using System.IO;
     using System.Reflection;
-    using System.Reflection.Emit;
-    using System.Text.RegularExpressions;
     using System.Windows.Forms;
 
     using QSLCardPrinter.DataClasses;
     using QSLCardPrinter.Helper;
     using QSLCardPrinter.Properties;
-
-    using Label = System.Windows.Forms.Label;
 
     #endregion
 
@@ -32,7 +28,7 @@ namespace QSLCardPrinter
     /// </summary>
     public partial class FormMain : Form
     {
-       
+        private List<LabelItem> labelItemList = new List<LabelItem>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FormMain"/> class. 
@@ -42,7 +38,8 @@ namespace QSLCardPrinter
             this.InitializeComponent();
 
             // Load last active template, if selected
-            if (Settings.Default.LoadLastActiveTemplate && !string.IsNullOrEmpty(Settings.Default.LastActiveTemplatePath))
+            if (Settings.Default.LoadLastActiveTemplate
+                && !string.IsNullOrEmpty(Settings.Default.LastActiveTemplatePath))
             {
                 try
                 {
@@ -83,9 +80,9 @@ namespace QSLCardPrinter
                         {
                             Name = labelItem.AdifKey,
                             Text =
-                                string.IsNullOrEmpty(labelItem.CustomString)
+                                string.IsNullOrEmpty(labelItem.DefaultString)
                                     ? labelItem.AdifKey
-                                    : labelItem.CustomString,
+                                    : labelItem.DefaultString,
                             AutoSize = true,
                             BackColor = Color.Transparent,
                             Top = labelItem.PositionTop,
@@ -96,16 +93,30 @@ namespace QSLCardPrinter
 
             label.DoubleClick += this.LabelOnDoubleClick;
 
-            this.labelList.Add(new LabelItem(label);
+            this.labelItemList.Add(new LabelItem());
 
-            new LabelItem())
             this.panelDesigner.Controls.Add(label);
         }
 
-       
+        /// <summary>
+        /// Clear the background image
+        /// </summary>
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event args</param>
+        private void ClearBackgroundImageToolStripMenuItemClick(object sender, EventArgs e)
+        {
+            this.panelDesigner.BackgroundImage = null;
+        }
 
-
-    
+        /// <summary>
+        /// Show configuration dialog
+        /// </summary>
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event args</param>
+        private void ConfigureToolStripMenuItemClick(object sender, EventArgs e)
+        {
+            new ConfigurationDialog().ShowDialog();
+        }
 
         /// <summary>
         /// Click on the exit menu button
@@ -128,23 +139,53 @@ namespace QSLCardPrinter
         }
 
         /// <summary>
+        /// Load background image in panel designed
+        /// </summary>
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event args</param>
+        private void LoadBackgroundImageToolStripMenuItemClick(object sender, EventArgs e)
+        {
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.Filter = @"JPG files (*.jpg)|*.jpg,*jpeg|Portable Network Graphic files (*.png)|*.png";
+                ofd.FilterIndex = 2;
+                ofd.RestoreDirectory = true;
+
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    // Get the path of specified file
+                    this.panelDesigner.BackgroundImage = Image.FromFile(ofd.FileName);
+
+                    // Save image path as last active
+                    Settings.Default.LastActiveBackgroundImagePath = ofd.FileName;
+                    Settings.Default.Save();
+                }
+            }
+        }
+
+        /// <summary>
         /// Load label items from file to labelList
         /// </summary>
         /// <param name="fileName">Filename / path that should be loaded</param>
         private void LoadFromTemplate(string fileName)
         {
-            // Dispose all old labels
-            foreach (var label in this.labelList)
-            {
-                label.Dispose();
-            }
-
             // Clear the list to be clean for items out of XML file
-            this.labelList.Clear();
+            this.labelItemList.Clear();
 
             // De-serialize items of once saved xml list to temporary label list
-            var labelItemList = XmlHandler.ReadFromXmlFile<List<LabelItem>>(fileName);
+            this.labelItemList = XmlHandler.ReadFromXmlFile<List<LabelItem>>(fileName);
 
+            // Show the labels from the list
+            this.ShowLabelItemListToPanel();
+
+
+        }
+
+        /// <summary>
+        /// Displays all label items
+        /// </summary>
+        private void ShowLabelItemListToPanel()
+        {
             // Add all labels from temporary label list to global list which is currently active
             foreach (var labelItem in labelItemList)
             {
@@ -198,19 +239,7 @@ namespace QSLCardPrinter
                 // Show dialog - check if the file name is not an empty string, then serialize list for saving.  
                 if (sfd.ShowDialog() == DialogResult.OK && !string.IsNullOrEmpty(sfd.FileName))
                 {
-                    var labelItemList = new List<LabelItem>();
-                    foreach (var label in this.labelList)
-                    {
-                        labelItemList.Add(
-                            new LabelItem(
-                                label.Name,
-                                label.Top,
-                                label.Left,
-                                new SerializableFont(label.Font),
-                                label.Name.StartsWith("custom") ? label.Text : null));
-                    }
-
-                    XmlHandler.WriteToXmlFile(labelItemList, sfd.FileName);
+                    XmlHandler.WriteToXmlFile(this.labelItemList, sfd.FileName);
 
                     // Save in settings as last active file
                     Settings.Default.LastActiveTemplatePath = sfd.FileName;
@@ -226,52 +255,7 @@ namespace QSLCardPrinter
         /// <param name="e">event args</param>
         private void StartLabelWizardToolStripMenuItemClick(object sender, EventArgs e)
         {
-            new LabelWizard(this.labelItem).ShowDialog();
-        }
-
-        /// <summary>
-        /// Show configuration dialog
-        /// </summary>
-        /// <param name="sender">sender object</param>
-        /// <param name="e">event args</param>
-        private void ConfigureToolStripMenuItemClick(object sender, EventArgs e)
-        {
-            new ConfigurationDialog().ShowDialog();
-        }
-
-        /// <summary>
-        /// Load background image in panel designed
-        /// </summary>
-        /// <param name="sender">sender object</param>
-        /// <param name="e">event args</param>
-        private void LoadBackgroundImageToolStripMenuItemClick(object sender, EventArgs e)
-        {
-            using (var ofd = new OpenFileDialog())
-            {
-                ofd.Filter = @"JPG files (*.jpg)|*.jpg,*jpeg|Portable Network Graphic files (*.png)|*.png";
-                ofd.FilterIndex = 2;
-                ofd.RestoreDirectory = true;
-
-                if (ofd.ShowDialog() == DialogResult.OK)
-                {
-                    // Get the path of specified file
-                    this.panelDesigner.BackgroundImage = Image.FromFile(ofd.FileName);
-
-                    // Save image path as last active
-                    Settings.Default.LastActiveBackgroundImagePath = ofd.FileName;
-                    Settings.Default.Save();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Clear the background image
-        /// </summary>
-        /// <param name="sender">sender object</param>
-        /// <param name="e">event args</param>
-        private void ClearBackgroundImageToolStripMenuItemClick(object sender, EventArgs e)
-        {
-            this.panelDesigner.BackgroundImage = null;
+            new LabelWizard(this.labelItemList).ShowDialog();
         }
     }
 }
