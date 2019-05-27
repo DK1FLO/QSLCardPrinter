@@ -72,6 +72,10 @@ namespace QSLCardPrinter
             // Load last active template + path
             this.checkBoxLoadLastActiveBackgroundImage.Checked = Settings.Default.LastActiveBackgroundImage;
             this.textBoxLastActiveTemplateFileName.Text = Settings.Default.LastActiveBackgroundImagePath;
+            
+            // Load QSL Card size
+            this.numericUpDownHeight.Value = Settings.Default.QSLCardHeight;
+            this.numericUpDownWidth.Value = Settings.Default.QSLCardWidth;
         }
 
         /// <summary>
@@ -84,6 +88,10 @@ namespace QSLCardPrinter
 
             // Background image load by default?
             Settings.Default.LastActiveBackgroundImage = this.checkBoxLoadLastActiveBackgroundImage.Checked;
+
+            // QSL Card dimensions
+            Settings.Default.QSLCardHeight = (int)this.numericUpDownHeight.Value;
+            Settings.Default.QSLCardWidth = (int)this.numericUpDownWidth.Value;
 
             // Save settings
             Settings.Default.Save();
