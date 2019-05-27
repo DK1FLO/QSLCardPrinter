@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.menuStripMain = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openTemplateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveTemplateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -43,21 +43,23 @@
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutQSLCardPrinterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panelDesigner = new System.Windows.Forms.Panel();
-            this.menuStrip1.SuspendLayout();
+            this.buttonPrint = new System.Windows.Forms.Button();
+            this.buttonLoadFromClip = new System.Windows.Forms.Button();
+            this.menuStripMain.SuspendLayout();
             this.SuspendLayout();
             // 
-            // menuStrip1
+            // menuStripMain
             // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuStripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.backgroundToolStripMenuItem,
             this.configureToolStripMenuItem,
             this.aboutToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(725, 24);
-            this.menuStrip1.TabIndex = 2;
-            this.menuStrip1.Text = "menuStrip1";
+            this.menuStripMain.Location = new System.Drawing.Point(0, 0);
+            this.menuStripMain.Name = "menuStripMain";
+            this.menuStripMain.Size = new System.Drawing.Size(768, 24);
+            this.menuStripMain.TabIndex = 2;
+            this.menuStripMain.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
             // 
@@ -162,25 +164,44 @@
             this.panelDesigner.Size = new System.Drawing.Size(700, 450);
             this.panelDesigner.TabIndex = 4;
             // 
+            // buttonPrint
+            // 
+            this.buttonPrint.Location = new System.Drawing.Point(718, 73);
+            this.buttonPrint.Name = "buttonPrint";
+            this.buttonPrint.Size = new System.Drawing.Size(40, 40);
+            this.buttonPrint.TabIndex = 5;
+            this.buttonPrint.UseVisualStyleBackColor = true;
+            // 
+            // buttonLoadFromClip
+            // 
+            this.buttonLoadFromClip.Location = new System.Drawing.Point(718, 27);
+            this.buttonLoadFromClip.Name = "buttonLoadFromClip";
+            this.buttonLoadFromClip.Size = new System.Drawing.Size(40, 40);
+            this.buttonLoadFromClip.TabIndex = 5;
+            this.buttonLoadFromClip.UseVisualStyleBackColor = true;
+            this.buttonLoadFromClip.Click += new System.EventHandler(this.ButtonLoadFromClip_Click);
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(725, 486);
+            this.ClientSize = new System.Drawing.Size(768, 486);
+            this.Controls.Add(this.buttonPrint);
+            this.Controls.Add(this.buttonLoadFromClip);
             this.Controls.Add(this.panelDesigner);
-            this.Controls.Add(this.menuStrip1);
-            this.MainMenuStrip = this.menuStrip1;
+            this.Controls.Add(this.menuStripMain);
+            this.MainMenuStrip = this.menuStripMain;
             this.Name = "FormMain";
             this.Text = "QSLCardPrinter";
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
+            this.menuStripMain.ResumeLayout(false);
+            this.menuStripMain.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.MenuStrip menuStripMain;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openTemplateToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveTemplateToolStripMenuItem;
@@ -195,6 +216,8 @@
         private System.Windows.Forms.Panel panelDesigner;
         private System.Windows.Forms.ToolStripMenuItem startLabelWizardToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.Button buttonLoadFromClip;
+        private System.Windows.Forms.Button buttonPrint;
     }
 }
 
