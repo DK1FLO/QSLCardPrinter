@@ -55,6 +55,12 @@
     <Compile Include="DataClasses\AdifItem.cs" />
     <Compile Include="DataClasses\LabelItem.cs" />
     <Compile Include="DataClasses\SerializableFont.cs" />
+    <Compile Include="FormAddFreeText.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAddFreeText.Designer.cs">
+      <DependentUpon>FormAddFreeText.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormConfigLabel.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -67,6 +73,7 @@
     <Compile Include="FormMain.Designer.cs">
       <DependentUpon>FormMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="Helper\AdifHelper.cs" />
     <Compile Include="Helper\ExceptionManager.cs" />
     <Compile Include="Helper\PrintHandler.cs" />
     <Compile Include="Helper\XmlHandler.cs" />
@@ -80,6 +87,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="ConfigurationDialog.resx">
       <DependentUpon>ConfigurationDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAddFreeText.resx">
+      <DependentUpon>FormAddFreeText.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormConfigLabel.resx">
       <DependentUpon>FormConfigLabel.cs</DependentUpon>
@@ -98,6 +108,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -111,6 +122,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Print_16x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ASX_Copy_blue_16x.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
