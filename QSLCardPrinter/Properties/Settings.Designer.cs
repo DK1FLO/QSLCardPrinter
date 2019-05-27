@@ -70,5 +70,29 @@ namespace QSLCardPrinter.Properties {
                 this["LastActiveBackgroundImagePath"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("140")]
+        public int QSLCardWidth {
+            get {
+                return ((int)(this["QSLCardWidth"]));
+            }
+            set {
+                this["QSLCardWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("90")]
+        public int QSLCardHeight {
+            get {
+                return ((int)(this["QSLCardHeight"]));
+            }
+            set {
+                this["QSLCardHeight"] = value;
+            }
+        }
     }
 }
