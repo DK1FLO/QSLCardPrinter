@@ -138,7 +138,7 @@
             this.buttonToLabelItemList.TabIndex = 6;
             this.buttonToLabelItemList.Text = ">";
             this.buttonToLabelItemList.UseVisualStyleBackColor = true;
-            this.buttonToLabelItemList.Click += new System.EventHandler(this.ButtonToLabelItemList_Click);
+            this.buttonToLabelItemList.Click += new System.EventHandler(this.ButtonToLabelItemListClick);
             // 
             // groupBoxCurrentLabelItems
             // 
@@ -161,6 +161,7 @@
             this.buttonDeleteLabel.TabIndex = 8;
             this.buttonDeleteLabel.Text = "Delete label";
             this.buttonDeleteLabel.UseVisualStyleBackColor = true;
+            this.buttonDeleteLabel.Click += new System.EventHandler(this.ButtonDeleteLabelClick);
             // 
             // buttonAddFreeText
             // 
@@ -170,6 +171,7 @@
             this.buttonAddFreeText.TabIndex = 8;
             this.buttonAddFreeText.Text = "Add free text";
             this.buttonAddFreeText.UseVisualStyleBackColor = true;
+            this.buttonAddFreeText.Click += new System.EventHandler(this.ButtonAddFreeTextClick);
             // 
             // groupBoxLabelSettings
             // 

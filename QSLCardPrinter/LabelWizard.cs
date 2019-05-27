@@ -17,8 +17,9 @@ namespace QSLCardPrinter
     using System.Windows.Forms;
 
     using QSLCardPrinter.DataClasses;
+    using QSLCardPrinter.Helper;
 
-    #endregion
+    #endregion  
 
     /// <summary>
     /// Class for helping the user to create labels out of ADIF data
@@ -31,36 +32,33 @@ namespace QSLCardPrinter
         private readonly BindingSource bindingSourceLabelList = new BindingSource();
 
         /// <summary>
-        /// Label list which should be edited
-        /// </summary>
-        private readonly List<LabelItem> labelList;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="LabelWizard"/> class.
         /// </summary>
         public LabelWizard()
         {
             this.InitializeComponent();
-        }
 
-        public LabelWizard(List<LabelItem> labelList)
-            : this()
-        {
-            this.labelList = labelList;
-            this.bindingSourceLabelList.DataSource = this.labelList;
+            this.bindingSourceLabelList.DataSource = FormMain.labelItemList;
             this.listBoxLabelItems.DataSource = this.bindingSourceLabelList;
         }
 
+        public event EventHandler LabelListUpdated;
+
+
         /// <summary>
-        /// Read ADIF from clipboard (for example copied from HamRadioDeluxe
+        /// Read ADIF from clipboard (for example copied from HamRadioDeluxe)
         /// </summary>
         /// <param name="sender">sender object</param>
         /// <param name="e">event args</param>
         private void ButtonReadClipboardClick(object sender, EventArgs e)
         {
-            var listOfAdifs = this.EvaluateStringAdif(Clipboard.GetText());
-
+            // Clear old data
             this.dataGridViewAdifItems.Rows.Clear();
+
+            // Evaluate the given ADIF text from clip
+            var listOfAdifs = AdifHelper.EvaluateStringAdif(Clipboard.GetText());
+            
+            // Add to GridView
             foreach (var adifItem in listOfAdifs)
             {
                 this.dataGridViewAdifItems.Rows.Add(
@@ -82,41 +80,34 @@ namespace QSLCardPrinter
         /// <param name="e">event args</param>
         private void ButtonReadFromFileClick(object sender, EventArgs e)
         {
-            throw new NotImplementedException("Not featured yet.");
-        }
-
-        private void ButtonToLabelItemList_Click(object sender, EventArgs e)
-        {
-            this.labelList.Add(
-                new LabelItem(
-                    this.dataGridViewAdifItems.CurrentRow.Cells[0].Value.ToString(),
-                    0,
-                    0,
-                    new SerializableFont(new Font(FontFamily.GenericSerif, 8, FontStyle.Regular)),
-                    string.Empty));
-
-            this.UpdateListView();
+            //// throw new NotImplementedException("Not featured yet.");
         }
 
         /// <summary>
-        /// Evaluates the ADIF string which was posted to clipboard
+        /// Add a label based on selected item in dataGridView
         /// </summary>
-        /// <param name="adifString"> A complete adif string </param>
-        /// <returns> A list of all found ADIF-Items</returns>
-        private List<AdifItem> EvaluateStringAdif(string adifString)
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event args</param>
+        private void ButtonToLabelItemListClick(object sender, EventArgs e)
         {
-            var regex = new Regex(@"<(?'name'\w+):(?'length'\d+)>(?'value'[^<]*)");
-            var matches = regex.Matches(adifString);
-
-            var adifItems = new List<AdifItem>();
-            foreach (Match match in matches)
+            // Add label based on selected dataGridView row, if not null
+            var dataGridViewRow = this.dataGridViewAdifItems.CurrentRow;
+            if (dataGridViewRow != null)
             {
-                adifItems.Add(
-                    new AdifItem(match.Groups["name"].Value.ToUpper(), match.Groups["value"].Value.TrimEnd()));
-            }
+                FormMain.labelItemList.Add(
+                    new LabelItem(
+                        dataGridViewRow.Cells[0].Value.ToString(),
+                        0,
+                        0,
+                        new SerializableFont(new Font(FontFamily.GenericSerif, 8, FontStyle.Regular)),
+                        string.Empty));
 
-            return adifItems;
+                // Update the listview
+                this.UpdateListView();
+            }
         }
+
+       
 
         /// <summary>
         /// New item is selected, show in "Settings for label"
@@ -138,6 +129,7 @@ namespace QSLCardPrinter
         private void NumericUpDownPositionLeftValueChanged(object sender, EventArgs e)
         {
             ((LabelItem)this.listBoxLabelItems.SelectedItem).PositionLeft = (int)this.numericUpDownPositionLeft.Value;
+            this.OnLabelListUpdated();
         }
 
         /// <summary>
@@ -148,6 +140,7 @@ namespace QSLCardPrinter
         private void NumericUpDownPositionTopValueChanged(object sender, EventArgs e)
         {
             ((LabelItem)this.listBoxLabelItems.SelectedItem).PositionTop = (int)this.numericUpDownPositionTop.Value;
+            this.OnLabelListUpdated();
         }
 
         /// <summary>
@@ -158,6 +151,7 @@ namespace QSLCardPrinter
         private void TextBoxDefaultValueTextChanged(object sender, EventArgs e)
         {
             ((LabelItem)this.listBoxLabelItems.SelectedItem).DefaultString = this.textBoxDefaultValue.Text;
+            this.OnLabelListUpdated();
         }
 
         /// <summary>
@@ -166,6 +160,35 @@ namespace QSLCardPrinter
         private void UpdateListView()
         {
             this.bindingSourceLabelList.ResetBindings(false);
+            this.OnLabelListUpdated();
+        }
+
+        /// <summary>
+        /// Delete a label from the label list
+        /// </summary>
+        /// <param name="sender">sender object</param>
+        /// <param name="e">event args</param>
+        private void ButtonDeleteLabelClick(object sender, EventArgs e)
+        {
+            // Remove the currently selected label, then update the list view
+            FormMain.labelItemList.Remove((LabelItem)this.listBoxLabelItems.SelectedItem);
+            this.UpdateListView();
+        }
+
+        protected virtual void OnLabelListUpdated()
+        {
+            this.LabelListUpdated?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void ButtonAddFreeTextClick(object sender, EventArgs e)
+        {
+            var diagForm = new FormAddFreeText();
+            if (diagForm.ShowDialog() == DialogResult.OK)
+            {
+                FormMain.labelItemList.Add(new LabelItem(@"freetext_" + DateTime.Now.ToBinary(), 0, 0, new SerializableFont(new Font(FontFamily.GenericSansSerif, 10)), diagForm.ReturnText));
+                this.UpdateListView();
+               
+            }
         }
     }
 }
