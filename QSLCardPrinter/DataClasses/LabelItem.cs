@@ -10,6 +10,7 @@ namespace QSLCardPrinter.DataClasses
 {
     #region using directives
 
+    using System.Drawing;
     using System.Windows.Forms;
     using System.Xml.Serialization;
 
@@ -21,6 +22,12 @@ namespace QSLCardPrinter.DataClasses
     public class LabelItem
     {
         private Label label;
+
+        private int positionLeft;
+
+        private int positionTop;
+
+        private string currentValueString;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LabelItem"/> class.
@@ -54,6 +61,22 @@ namespace QSLCardPrinter.DataClasses
         public string AdifKey { get; set; }
 
         /// <summary>
+        /// Gets or sets the string that is currently valid as value
+        /// </summary>
+        public string CurrentValueString
+        {
+            get => this.currentValueString;
+            set
+            {
+                if (this.Label != null)
+                {
+                    this.Label.Text = value;
+                }
+                this.currentValueString = value;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the string that indicates that the label has a custom string
         /// </summary>
         public string DefaultString { get; set; }
@@ -72,17 +95,39 @@ namespace QSLCardPrinter.DataClasses
         /// <summary>
         /// Gets or sets the Position from left [mm]
         /// </summary>
-        public int PositionLeft { get; set; }
+        public int PositionLeft
+        {
+            get => this.positionLeft;
+            set
+            {
+                this.positionLeft = value;
+                if (this.Label != null)
+                {
+                    this.Label.Left = value;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or sets the position from top [mm]
         /// </summary>
-        public int PositionTop { get; set; }
+        public int PositionTop
+        {
+            get => this.positionTop;
+            set
+            {
+                this.positionTop = value;
+                if (this.Label != null)
+                {
+                    this.Label.Top = value;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or sets the font that was selected
         /// </summary>
-        public SerializableFont SelectedFont { get; set; }
+        public SerializableFont SelectedFont { get; set; } = new SerializableFont(new Font(FontFamily.GenericSansSerif, 10));
 
         /// <summary>
         /// Converts the data of this class to a real label object
