@@ -73,7 +73,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FormAddFreeText";
-            this.Text = "FormAddFreeText";
+            this.Text = "Add a free text";
             this.ResumeLayout(false);
             this.PerformLayout();
 
