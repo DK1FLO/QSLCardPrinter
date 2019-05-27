@@ -28,7 +28,7 @@ namespace QSLCardPrinter
     /// </summary>
     public partial class FormMain : Form
     {
-        private List<LabelItem> labelItemList = new List<LabelItem>();
+        public static List<LabelItem> labelItemList = new List<LabelItem>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FormMain"/> class. 
@@ -65,37 +65,6 @@ namespace QSLCardPrinter
                     ExceptionManager.ShowException(new Exception("Could not load last active background image.", e));
                 }
             }
-        }
-
-        /// <summary>
-        /// Add a labelItem to the label list (also to the panel)
-        /// </summary>
-        /// <param name="labelItem">label item which should be added</param>
-        private void AddLabel(LabelItem labelItem)
-        {
-            Label label;
-
-            // Check if font is not null, then add
-            label = new Label
-                        {
-                            Name = labelItem.AdifKey,
-                            Text =
-                                string.IsNullOrEmpty(labelItem.DefaultString)
-                                    ? labelItem.AdifKey
-                                    : labelItem.DefaultString,
-                            AutoSize = true,
-                            BackColor = Color.Transparent,
-                            Top = labelItem.PositionTop,
-                            Left = labelItem.PositionLeft,
-                            Font = labelItem.SelectedFont.ToFont(),
-                            TextAlign = ContentAlignment.MiddleCenter
-                        };
-
-            label.DoubleClick += this.LabelOnDoubleClick;
-
-            this.labelItemList.Add(new LabelItem());
-
-            this.panelDesigner.Controls.Add(label);
         }
 
         /// <summary>
@@ -170,28 +139,47 @@ namespace QSLCardPrinter
         private void LoadFromTemplate(string fileName)
         {
             // Clear the list to be clean for items out of XML file
-            this.labelItemList.Clear();
+            labelItemList.Clear();
 
             // De-serialize items of once saved xml list to temporary label list
-            this.labelItemList = XmlHandler.ReadFromXmlFile<List<LabelItem>>(fileName);
+            labelItemList = XmlHandler.ReadFromXmlFile<List<LabelItem>>(fileName);
 
             // Show the labels from the list
-            this.ShowLabelItemListToPanel();
-
-
+            this.UpdateDisplayedLabels();
         }
 
         /// <summary>
         /// Displays all label items
         /// </summary>
-        private void ShowLabelItemListToPanel()
+        private void UpdateDisplayedLabels()
         {
-            // Add all labels from temporary label list to global list which is currently active
+            // Clear old items
+            this.panelDesigner.Controls.Clear();
+
+            // Add all labels to panel designer
             foreach (var labelItem in labelItemList)
             {
-                this.AddLabel(labelItem);
+                var label = labelItem.Label;
+
+                // Change Top/Left according to width of the panel designer
+                label.Left = (int)(this.panelDesigner.Width
+                                   * (labelItem.PositionLeft / (double)Settings.Default.QSLCardWidth));
+                label.Top = (int)(this.panelDesigner.Height
+                                  * (labelItem.PositionTop / (double)Settings.Default.QSLCardHeight));
+
+                label.BorderStyle = BorderStyle.FixedSingle;
+
+                // Check if current string is empty -> display adif key. Later in print, there is the decision between default value or current
+                label.Text = string.IsNullOrEmpty(labelItem.CurrentValueString) ? labelItem.AdifKey : labelItem.CurrentValueString;
+                
+
+                this.panelDesigner.Controls.Add(label);
+
+                label.DoubleClick += this.LabelOnDoubleClick;
             }
         }
+
+
 
         /// <summary>
         /// Read a configuration (= position of labels) to the labelList
@@ -239,7 +227,7 @@ namespace QSLCardPrinter
                 // Show dialog - check if the file name is not an empty string, then serialize list for saving.  
                 if (sfd.ShowDialog() == DialogResult.OK && !string.IsNullOrEmpty(sfd.FileName))
                 {
-                    XmlHandler.WriteToXmlFile(this.labelItemList, sfd.FileName);
+                    XmlHandler.WriteToXmlFile(labelItemList, sfd.FileName);
 
                     // Save in settings as last active file
                     Settings.Default.LastActiveTemplatePath = sfd.FileName;
@@ -255,7 +243,30 @@ namespace QSLCardPrinter
         /// <param name="e">event args</param>
         private void StartLabelWizardToolStripMenuItemClick(object sender, EventArgs e)
         {
-            new LabelWizard(this.labelItemList).ShowDialog();
+            var labelWizard = new LabelWizard();
+            labelWizard.LabelListUpdated += this.LabelWizardLabelListUpdated;
+            labelWizard.ShowDialog();
+        }
+
+        private void LabelWizardLabelListUpdated(object sender, EventArgs e)
+        {
+            this.UpdateDisplayedLabels();
+        }
+
+        private void ButtonLoadFromClip_Click(object sender, EventArgs e)
+        {
+            var listOfAdifs = AdifHelper.EvaluateStringAdif(Clipboard.GetText());
+
+            foreach (var adifItem in listOfAdifs)
+            {
+                var labelItem = labelItemList.Find(x => x.AdifKey == adifItem.AdifName);
+                if (labelItem != null)
+                {
+                    labelItem.CurrentValueString = adifItem.AdifValue;
+                }
+            }
+
+            this.UpdateDisplayedLabels();
         }
     }
 }
